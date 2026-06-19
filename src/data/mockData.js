@@ -36,3 +36,60 @@ export const leaders = [
   { id: 2, name: "Ana Souza", role: "Líder de Projetos" },
   { id: 3, name: "Roberto Lima", role: "Líder de Manutenção" },
 ];
+
+export const costCenters = [
+  {
+    id: 1,
+    code: "CC-001",
+    name: "Operações de Campo",
+    budget: 15000,
+    spent: 8400,
+  },
+  {
+    id: 2,
+    code: "CC-002",
+    name: "Projetos Especiais",
+    budget: 20000,
+    spent: 11200,
+  },
+  { id: 3, code: "CC-003", name: "Manutenção", budget: 10000, spent: 3750 },
+];
+
+export const costEntries = [
+  {
+    id: 1,
+    costCenterId: 1,
+    costCenter: "Operações de Campo",
+    vehicle: "Fiat Strada",
+    leader: "Carlos Silva",
+    date: "2026-06-20",
+    km: 120,
+    fuelCost: 180,
+    otherCost: 0,
+    description: "Visita técnica - Estação Norte",
+  },
+  {
+    id: 2,
+    costCenterId: 2,
+    costCenter: "Projetos Especiais",
+    vehicle: "Volkswagen Amarok",
+    leader: "Ana Souza",
+    date: "2026-06-20",
+    km: 95,
+    fuelCost: 142.5,
+    otherCost: 50,
+    description: "Reunião com cliente - Escritório Regional",
+  },
+  {
+    id: 3,
+    costCenterId: 1,
+    costCenter: "Operações de Campo",
+    vehicle: "Toyota Hilux",
+    leader: "Roberto Lima",
+    date: "2026-06-18",
+    km: 210,
+    fuelCost: 315,
+    otherCost: 80,
+    description: "Inspeção de infraestrutura",
+  },
+];

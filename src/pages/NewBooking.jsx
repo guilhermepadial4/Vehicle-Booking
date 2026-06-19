@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { vehicles, leaders } from "../data/mockData";
+import { vehicles, leaders, costCenters } from "../data/mockData";
+import { useBookings } from "../context/BookingContext";
 import logo from "../assets/logo.png";
 
 export default function NewBooking() {
   const navigate = useNavigate();
+  const { addBooking } = useBookings();
   const [form, setForm] = useState({
     vehicleId: "",
     leaderId: "",
+    costCenterId: "",
     date: "",
     startTime: "",
     endTime: "",
@@ -22,6 +25,26 @@ export default function NewBooking() {
 
   function handleSubmit(e) {
     e.preventDefault();
+    const vehicle = vehicles.find((v) => v.id === parseInt(form.vehicleId));
+    const leader = leaders.find((l) => l.id === parseInt(form.leaderId));
+    const costCenter = costCenters.find(
+      (c) => c.id === parseInt(form.costCenterId),
+    );
+
+    addBooking({
+      vehicleId: parseInt(form.vehicleId),
+      vehicle: vehicle.name,
+      leader: leader.name,
+      costCenterId: parseInt(form.costCenterId),
+      costCenter: costCenter.name,
+      costCenterCode: costCenter.code,
+      date: form.date,
+      startTime: form.startTime,
+      endTime: form.endTime,
+      destination: form.destination,
+      purpose: form.purpose,
+    });
+
     setSubmitted(true);
   }
 
@@ -52,7 +75,6 @@ export default function NewBooking() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
       <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <img src={logo} alt="Dellut Engenharia" className="h-10" />
         <div className="flex items-center gap-4">
@@ -77,7 +99,6 @@ export default function NewBooking() {
 
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Veículo */}
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1.5">
                 Veículo
@@ -98,7 +119,6 @@ export default function NewBooking() {
               </select>
             </div>
 
-            {/* Líder */}
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1.5">
                 Líder Responsável
@@ -119,7 +139,26 @@ export default function NewBooking() {
               </select>
             </div>
 
-            {/* Data */}
+            <div>
+              <label className="block text-sm font-medium text-[#333] mb-1.5">
+                Centro de Custo
+              </label>
+              <select
+                name="costCenterId"
+                value={form.costCenterId}
+                onChange={handleChange}
+                required
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#CC0000] bg-white"
+              >
+                <option value="">Selecione o centro de custo</option>
+                {costCenters.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.code} — {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1.5">
                 Data
@@ -134,7 +173,6 @@ export default function NewBooking() {
               />
             </div>
 
-            {/* Horários */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[#333] mb-1.5">
@@ -164,7 +202,6 @@ export default function NewBooking() {
               </div>
             </div>
 
-            {/* Destino */}
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1.5">
                 Destino
@@ -180,7 +217,6 @@ export default function NewBooking() {
               />
             </div>
 
-            {/* Finalidade */}
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1.5">
                 Finalidade
