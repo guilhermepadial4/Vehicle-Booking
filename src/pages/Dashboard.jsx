@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { vehicles } from "../data/mockData";
 import { useBookings } from "../context/BookingContext";
+import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.png";
 
 export default function Dashboard() {
@@ -10,6 +11,7 @@ export default function Dashboard() {
   );
   const navigate = useNavigate();
   const { bookings } = useBookings();
+  const { currentUser, logout } = useAuth();
 
   const dailyBookings = bookings.filter(
     (b) => selectedDate >= b.startDate && selectedDate <= b.endDate,
@@ -19,14 +21,19 @@ export default function Dashboard() {
     return dailyBookings.find((b) => b.vehicleId === vehicleId) || null;
   };
 
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <img src={logo} alt="Dellut Engenharia" className="h-10" />
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-500">Carlos Silva</span>
+          <span className="text-sm text-gray-500">{currentUser?.name}</span>
           <button
-            onClick={() => navigate("/login")}
+            onClick={handleLogout}
             className="text-sm text-[#CC0000] hover:underline"
           >
             Sair

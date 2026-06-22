@@ -1,16 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBookings } from "../context/BookingContext";
+import { useAuth } from "../context/AuthContext";
 import { costCenters, costEntries } from "../data/mockData";
 import logo from "../assets/logo.png";
 
 export default function Admin() {
   const navigate = useNavigate();
   const { bookings, updateStatus } = useBookings();
+  const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState("reservas");
 
   const confirmed = bookings.filter((b) => b.status === "confirmado").length;
   const pending = bookings.filter((b) => b.status === "pendente").length;
+
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -21,7 +28,7 @@ export default function Admin() {
             Administrador
           </span>
           <button
-            onClick={() => navigate("/login")}
+            onClick={handleLogout}
             className="text-sm text-[#CC0000] hover:underline"
           >
             Sair
@@ -39,7 +46,6 @@ export default function Admin() {
           </p>
         </div>
 
-        {/* Abas */}
         <div className="flex gap-1 mb-6 bg-white border border-gray-200 rounded-xl p-1 w-fit">
           <button
             onClick={() => setActiveTab("reservas")}
@@ -100,7 +106,7 @@ export default function Admin() {
                       <th className="text-left px-6 py-3">Veículo</th>
                       <th className="text-left px-6 py-3">Líder</th>
                       <th className="text-left px-6 py-3">Centro de Custo</th>
-                      <th className="text-left px-6 py-3">Data</th>
+                      <th className="text-left px-6 py-3">Período</th>
                       <th className="text-left px-6 py-3">Horário</th>
                       <th className="text-left px-6 py-3">Destino</th>
                       <th className="text-left px-6 py-3">Status</th>
@@ -125,7 +131,9 @@ export default function Admin() {
                             : "—"}
                         </td>
                         <td className="px-6 py-4 text-gray-600">
-                          {booking.date}
+                          {booking.startDate === booking.endDate
+                            ? booking.startDate
+                            : `${booking.startDate} → ${booking.endDate}`}
                         </td>
                         <td className="px-6 py-4 text-gray-600">
                           {booking.startTime} – {booking.endTime}
