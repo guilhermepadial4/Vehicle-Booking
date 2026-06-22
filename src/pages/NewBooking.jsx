@@ -20,10 +20,12 @@ export default function NewBooking() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [dateError, setDateError] = useState("");
+  const [conflictError, setConflictError] = useState("");
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
     setDateError("");
+    setConflictError("");
   }
 
   function handleSubmit(e) {
@@ -42,7 +44,7 @@ export default function NewBooking() {
       (c) => c.id === parseInt(form.costCenterId),
     );
 
-    addBooking({
+    const result = addBooking({
       vehicleId: parseInt(form.vehicleId),
       vehicle: vehicle.name,
       leader: leader.name,
@@ -56,6 +58,11 @@ export default function NewBooking() {
       destination: form.destination,
       purpose: form.purpose,
     });
+
+    if (!result.success) {
+      setConflictError(result.message);
+      return;
+    }
 
     setSubmitted(true);
   }
@@ -120,7 +127,9 @@ export default function NewBooking() {
                 value={form.vehicleId}
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#CC0000] bg-white"
+                className={`w-full border rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#CC0000] bg-white ${
+                  conflictError ? "border-red-400" : "border-gray-200"
+                }`}
               >
                 <option value="">Selecione um veículo</option>
                 {vehicles.map((v) => (
@@ -171,7 +180,6 @@ export default function NewBooking() {
               </select>
             </div>
 
-            {/* Datas */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[#333] mb-1.5">
@@ -183,7 +191,11 @@ export default function NewBooking() {
                   value={form.startDate}
                   onChange={handleChange}
                   required
-                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#CC0000]"
+                  className={`w-full border rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#CC0000] ${
+                    conflictError || dateError
+                      ? "border-red-400"
+                      : "border-gray-200"
+                  }`}
                 />
               </div>
               <div>
@@ -197,14 +209,27 @@ export default function NewBooking() {
                   onChange={handleChange}
                   required
                   min={form.startDate}
-                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#CC0000]"
+                  className={`w-full border rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#CC0000] ${
+                    conflictError || dateError
+                      ? "border-red-400"
+                      : "border-gray-200"
+                  }`}
                 />
               </div>
             </div>
 
-            {dateError && <p className="text-xs text-red-500">{dateError}</p>}
+            {dateError && (
+              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                <span className="text-red-500 text-sm">⚠️ {dateError}</span>
+              </div>
+            )}
 
-            {/* Horários */}
+            {conflictError && (
+              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                <span className="text-red-500 text-sm">⚠️ {conflictError}</span>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[#333] mb-1.5">
