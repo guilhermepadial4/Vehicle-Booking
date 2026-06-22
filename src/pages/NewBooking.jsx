@@ -11,20 +11,31 @@ export default function NewBooking() {
     vehicleId: "",
     leaderId: "",
     costCenterId: "",
-    date: "",
+    startDate: "",
+    endDate: "",
     startTime: "",
     endTime: "",
     destination: "",
     purpose: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [dateError, setDateError] = useState("");
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setDateError("");
   }
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    if (form.endDate < form.startDate) {
+      setDateError(
+        "A data de chegada não pode ser anterior à data de partida.",
+      );
+      return;
+    }
+
     const vehicle = vehicles.find((v) => v.id === parseInt(form.vehicleId));
     const leader = leaders.find((l) => l.id === parseInt(form.leaderId));
     const costCenter = costCenters.find(
@@ -38,7 +49,8 @@ export default function NewBooking() {
       costCenterId: parseInt(form.costCenterId),
       costCenter: costCenter.name,
       costCenterCode: costCenter.code,
-      date: form.date,
+      startDate: form.startDate,
+      endDate: form.endDate,
       startTime: form.startTime,
       endTime: form.endTime,
       destination: form.destination,
@@ -159,20 +171,40 @@ export default function NewBooking() {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-[#333] mb-1.5">
-                Data
-              </label>
-              <input
-                type="date"
-                name="date"
-                value={form.date}
-                onChange={handleChange}
-                required
-                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#CC0000]"
-              />
+            {/* Datas */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[#333] mb-1.5">
+                  Data de Partida
+                </label>
+                <input
+                  type="date"
+                  name="startDate"
+                  value={form.startDate}
+                  onChange={handleChange}
+                  required
+                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#CC0000]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#333] mb-1.5">
+                  Data de Chegada
+                </label>
+                <input
+                  type="date"
+                  name="endDate"
+                  value={form.endDate}
+                  onChange={handleChange}
+                  required
+                  min={form.startDate}
+                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#CC0000]"
+                />
+              </div>
             </div>
 
+            {dateError && <p className="text-xs text-red-500">{dateError}</p>}
+
+            {/* Horários */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[#333] mb-1.5">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { vehicles, bookings } from "../data/mockData";
+import { vehicles } from "../data/mockData";
+import { useBookings } from "../context/BookingContext";
 import logo from "../assets/logo.png";
 
 export default function Dashboard() {
@@ -8,17 +9,18 @@ export default function Dashboard() {
     new Date().toISOString().split("T")[0],
   );
   const navigate = useNavigate();
+  const { bookings } = useBookings();
 
-  const dailyBookings = bookings.filter((b) => b.date === selectedDate);
+  const dailyBookings = bookings.filter(
+    (b) => selectedDate >= b.startDate && selectedDate <= b.endDate,
+  );
 
-  const getVehicleStatus = (vehicleId) => {
-    const booking = dailyBookings.find((b) => b.vehicleId === vehicleId);
-    return booking || null;
+  const getVehicleBooking = (vehicleId) => {
+    return dailyBookings.find((b) => b.vehicleId === vehicleId) || null;
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
       <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <img src={logo} alt="Dellut Engenharia" className="h-10" />
         <div className="flex items-center gap-4">
@@ -33,7 +35,6 @@ export default function Dashboard() {
       </nav>
 
       <div className="max-w-5xl mx-auto px-6 py-8">
-        {/* Cabeçalho */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-semibold text-[#1a1a1a]">
@@ -51,7 +52,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Seletor de data */}
         <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex items-center gap-4">
           <label className="text-sm font-medium text-gray-600">
             Selecionar data:
@@ -64,10 +64,9 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Cards de veículos */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {vehicles.map((vehicle) => {
-            const booking = getVehicleStatus(vehicle.id);
+            const booking = getVehicleBooking(vehicle.id);
             const isOccupied = !!booking;
 
             return (
@@ -100,6 +99,9 @@ export default function Dashboard() {
                   <div className="mt-2 text-xs text-gray-500 space-y-0.5">
                     <p>👤 {booking.leader}</p>
                     <p>
+                      📅 {booking.startDate} → {booking.endDate}
+                    </p>
+                    <p>
                       🕐 {booking.startTime} – {booking.endTime}
                     </p>
                     <p>📍 {booking.destination}</p>
@@ -114,10 +116,8 @@ export default function Dashboard() {
           })}
         </div>
 
-        {/* Lista de reservas do dia */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <h2 className="font-semibold text-[#1a1a1a] mb-4">Reservas do dia</h2>
-
           {dailyBookings.length === 0 ? (
             <p className="text-sm text-gray-400">
               Nenhuma reserva para esta data.
@@ -134,8 +134,9 @@ export default function Dashboard() {
                       {booking.vehicle}
                     </p>
                     <p className="text-xs text-gray-400">
-                      {booking.leader} · {booking.startTime} – {booking.endTime}{" "}
-                      · {booking.destination}
+                      {booking.leader} · {booking.startDate} → {booking.endDate}{" "}
+                      · {booking.startTime} – {booking.endTime} ·{" "}
+                      {booking.destination}
                     </p>
                   </div>
                   <span
